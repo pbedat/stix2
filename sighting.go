@@ -25,12 +25,12 @@ import (
 //
 // Sighting relationships relate three aspects of the sighting:
 //
-//		* What was sighted, such as the Indicator, Malware, Campaign, or other
-//		  SDO (sighting_of_ref)
-//		* Who sighted it and/or where it was sighted, represented as an
-//		  Identity (where_sighted_refs) and
-//		* What was actually seen on systems and networks, represented as
-//		  Observed Data (observed_data_refs)
+//   - What was sighted, such as the Indicator, Malware, Campaign, or other
+//     SDO (sighting_of_ref)
+//   - Who sighted it and/or where it was sighted, represented as an
+//     Identity (where_sighted_refs) and
+//   - What was actually seen on systems and networks, represented as
+//     Observed Data (observed_data_refs)
 //
 // What was sighted is required; a sighting does not make sense unless you say
 // what you saw. Who sighted it, where it was sighted, and what was actually
@@ -135,9 +135,21 @@ func NewSighting(s Identifier, opts ...STIXOption) (*Sighting, error) {
 		return nil, fmt.Errorf("%w: Last seen (%s) is before first seen (%s)", ErrInvalidProperty, obj.LastSeen, obj.FirstSeen)
 	}
 
-	// TODO: add check that SightingOf points to SDO or custom object.
-	// TODO: add check that ObservedData points to Observed Data SDOs.
-	// TODO: add check that WhereSighted points to Identity or Location SDOs.
+	for _, id := range obj.ObservedData {
+		if !IsValidIdentifier(id) || !id.ForType(TypeObservedData) {
+			return nil, ErrInvalidParameter
+		}
+	}
+
+	for _, id := range obj.WhereSighted {
+		if !IsValidIdentifier(id) || (!id.ForTypes(TypeIdentity, TypeLocation)) {
+			return nil, ErrInvalidParameter
+		}
+	}
+
+	if !obj.SightingOf.ForCategories(ObjectCategorySDO, ObjectCategoryUnknown) {
+		return nil, ErrInvalidParameter
+	}
 
 	return obj, nil
 }

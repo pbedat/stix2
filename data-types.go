@@ -178,6 +178,25 @@ func (i Identifier) ForTypes(typ ...STIXType) bool {
 	return false
 }
 
+func (i Identifier) ForCategory(cat STIXObjectCategory) bool {
+	return i.Type().Category() == cat
+}
+
+func (i Identifier) ForCategories(cats ...STIXObjectCategory) bool {
+	for _, cat := range cats {
+		if i.ForCategory(cat) {
+			return true
+		}
+	}
+	return false
+}
+
+func (i Identifier) Type() STIXType {
+	idx := strings.Index(string(i), "--")
+
+	return STIXType(string(i)[:idx])
+}
+
 // HasValidIdentifier checks that the STIXObject has a valid identifer.
 func HasValidIdentifier(obj STIXObject) bool {
 	parts := strings.Split(string(obj.GetID()), "--")
@@ -320,6 +339,10 @@ const (
 	// TypeX509Certificate is used for X.509 certificate type.
 	TypeX509Certificate STIXType = "x509-certificate"
 )
+
+func (t STIXType) Category() STIXObjectCategory {
+	return GetCategory(t)
+}
 
 // AllTypes is a list of all STIX types.
 var AllTypes = []STIXType{

@@ -193,12 +193,13 @@ func TestExtensionCustomObject(t *testing.T) {
 	data := []byte(fmt.Sprintf("[%s,%s]", extPropJson, customObject))
 
 	t.Run("Getters", func(t *testing.T) {
-		custom := &CustomObject{}
+		custom := &CustomObject{"extension_type": ExtensionTypeNewSDO}
 		custom.Set("str", "str")
 		custom.Set("int", int64(42))
 		custom.Set("strSlice", []string{"1", "2"})
 		custom.Set("modified", "20140220")
 
+		assert.Equal(custom.Category(), ObjectCategorySDO)
 		assert.Equal("str", custom.GetAsString("str"))
 		assert.Equal("", custom.GetAsString("str2"))
 		assert.Equal(int64(42), custom.GetAsNumber("int"))
@@ -541,6 +542,10 @@ type mitreTactic struct {
 	AttackSpecVersion  string               `json:"x_mitre_attack_spec_version"`
 	ModifiedBy         Identifier           `json:"x_mitre_modified_by_ref"`
 	ShortName          string               `json:"x_mitre_shortname"`
+}
+
+func (m mitreTactic) Category() STIXObjectCategory {
+	return ObjectCategorySDO
 }
 
 // GetID returns the identifier for the object.

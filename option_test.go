@@ -51,7 +51,7 @@ func TestCyberObservableOptions(t *testing.T) {
 	})
 
 	t.Run("empty_object", func(t *testing.T) {
-		obj := &emptryTestStruct{}
+		obj := &emptyTestStruct{}
 		err := OptionDefanged(true)(obj)
 		a.Error(err)
 		a.Equal("failed to apply Defanged option: Defanged not found", err.Error())
@@ -94,7 +94,7 @@ func TestCyberObservableOptions(t *testing.T) {
 
 	t.Run("extensions_wrong_extension_kind", func(t *testing.T) {
 		obj := &struct {
-			emptryTestStruct
+			emptyTestStruct
 			STIXCyberObservableObject struct {
 				Extensions string
 			}
@@ -106,7 +106,7 @@ func TestCyberObservableOptions(t *testing.T) {
 
 	t.Run("extensions_no_field", func(t *testing.T) {
 		obj := &struct {
-			emptryTestStruct
+			emptyTestStruct
 			STIXCyberObservableObject struct {
 				Something string
 			}
@@ -130,44 +130,53 @@ func TestCyberObservableOptions(t *testing.T) {
 	})
 }
 
-type emptryTestStruct struct{}
+type emptyTestStruct struct {
+}
 
-func (s *emptryTestStruct) GetExtendedTopLevelProperties() *CustomObject {
+func (s *emptyTestStruct) Category() STIXObjectCategory {
 	panic("Failed")
 }
 
-func (s *emptryTestStruct) GetCreated() *time.Time {
+func (s *emptyTestStruct) GetExtendedTopLevelProperties() *CustomObject {
 	panic("Failed")
 }
 
-func (s *emptryTestStruct) GetModified() *time.Time {
+func (s *emptyTestStruct) GetCreated() *time.Time {
 	panic("Failed")
 }
 
-func (s *emptryTestStruct) GetType() STIXType {
+func (s *emptyTestStruct) GetModified() *time.Time {
 	panic("Failed")
 }
 
-func (s *emptryTestStruct) GetID() Identifier {
+func (s *emptyTestStruct) GetType() STIXType {
+	panic("Failed")
+}
+
+func (s *emptyTestStruct) GetID() Identifier {
 	panic("Failed")
 }
 
 type testStructWithDefanged struct {
-	emptryTestStruct
+	emptyTestStruct
 	Defanged bool
 }
 
 type structWithWrongKind struct {
-	emptryTestStruct
+	emptyTestStruct
 	STIXCyberObservableObject bool
 }
 
 type structWithWrongFieldKind struct {
-	emptryTestStruct
+	emptyTestStruct
 	Defanged string
 }
 
 type badType string
+
+func (s *badType) Category() STIXObjectCategory {
+	panic("Failed")
+}
 
 func (s *badType) GetExtendedTopLevelProperties() *CustomObject {
 	panic("Failed")

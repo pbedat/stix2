@@ -132,6 +132,10 @@ type LanguageContent struct {
 	toplevelProperties *CustomObject
 }
 
+func (o *LanguageContent) Category() STIXObjectCategory {
+	return ObjectCategorySMO
+}
+
 func (o *LanguageContent) MarshalJSON() ([]byte, error) {
 	return marshalToJSONHelper(o)
 }
@@ -266,6 +270,10 @@ type MarkingDefinition struct {
 	Definition interface{} `json:"definition"`
 
 	toplevelProperties *CustomObject
+}
+
+func (o *MarkingDefinition) Category() STIXObjectCategory {
+	return ObjectCategorySMO
 }
 
 func (o *MarkingDefinition) MarshalJSON() ([]byte, error) {

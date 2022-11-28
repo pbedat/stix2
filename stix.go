@@ -26,6 +26,51 @@ type STIXObject interface {
 	// GetExtendedTopLevelProperties returns the extra top level properties or
 	// nil for the object.
 	GetExtendedTopLevelProperties() *CustomObject
+
+	Category() STIXObjectCategory
+}
+
+// categories based on the stix taxonomy of cyber threat intelligence
+// see https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_klv9fmnhjhrc
+type STIXObjectCategory string
+
+const (
+	// stix domain objects
+	ObjectCategorySDO STIXObjectCategory = "SDO"
+	// stix relationship objects
+	ObjectCategorySRO STIXObjectCategory = "SRO"
+	// stix cyber-observable objects
+	ObjectCategorySCO STIXObjectCategory = "SCO"
+	// stix meta objects
+	ObjectCategorySMO STIXObjectCategory = "SMO"
+	// e.g. extensions
+	ObjectCategoryUnknown STIXObjectCategory = "unknown"
+	// bundle
+	ObjectCategoryBundle STIXObjectCategory = "bundle"
+)
+
+func GetCategory(t STIXType) STIXObjectCategory {
+	switch t {
+	case TypeAttackPattern, TypeCampaign, TypeCourseOfAction, TypeGrouping,
+		TypeIdentity, TypeIncident, TypeIndicator, TypeInfrastructure, TypeIntrusionSet,
+		TypeLocation, TypeMalware, TypeMalwareAnalysis, TypeNote, TypeObservedData,
+		TypeOpinion, TypeReport, TypeThreatActor, TypeTool, TypeVulnerability:
+		return ObjectCategorySDO
+	case TypeDomainName,
+		TypeIPv4Addr, TypeIPv6Addr, TypeArtifact,
+		TypeAutonomousSystem, TypeDirectory, TypeEmailAddress, TypeEmailMessage,
+		TypeFile, TypeMACAddress, TypeMutex, TypeNetworkTraffic, TypeProcess,
+		TypeSoftware, TypeURL, TypeUserAccount, TypeRegistryKey, TypeX509Certificate:
+		return ObjectCategorySCO
+	case TypeRelationship, TypeSighting:
+		return ObjectCategorySRO
+	case TypeLanguageContent, TypeMarkingDefinition:
+		return ObjectCategorySMO
+	case TypeBundle:
+		return ObjectCategoryBundle
+	}
+
+	return ObjectCategoryUnknown
 }
 
 type canHaveExtensions interface {

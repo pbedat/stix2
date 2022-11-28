@@ -14,7 +14,7 @@ import (
 func TestSighting(t *testing.T) {
 	assert := assert.New(t)
 
-	data := NewIdentifier(TypeIPv4Addr)
+	data := NewIdentifier(TypeObservedData)
 	indicator := NewIdentifier(TypeIndicator)
 
 	t.Run("missing_property", func(t *testing.T) {
@@ -127,6 +127,73 @@ func TestSighting(t *testing.T) {
 		for _, test := range tests {
 			obj, err := NewSighting(indicator, OptionFirstSeen(test.before), OptionLastSeen(test.after))
 			if test.err {
+				assert.Error(err)
+				assert.Nil(obj)
+			} else {
+				assert.NoError(err)
+				assert.NotNil(obj)
+			}
+		}
+	})
+
+	t.Run("validate_observed_data", func(t *testing.T) {
+		tests := []struct {
+			stixType STIXType
+			err      bool
+		}{
+			{TypeReport, true},
+			{TypeIPv4Addr, false},
+		}
+
+		for _, test := range tests {
+			id := NewIdentifier(test.stixType)
+			obj, err := NewSighting(indicator, OptionObservedData([]Identifier{id}))
+			assert.Error(err)
+			assert.Nil(obj)
+		}
+	})
+
+	t.Run("validate_where_sighted_ref", func(t *testing.T) {
+		tests := []struct {
+			stixType STIXType
+			err      bool
+		}{
+			{TypeLocation, false},
+			{TypeIdentity, false},
+			{TypeReport, true},
+			{TypeIPv4Addr, true},
+		}
+
+		for _, test := range tests {
+			id := NewIdentifier(test.stixType)
+			obj, err := NewSighting(indicator, OptionWhereSighted([]Identifier{id}))
+
+			if test.err {
+				assert.Error(err)
+				assert.Nil(obj)
+			} else {
+				assert.NoError(err)
+				assert.NotNil(obj)
+			}
+		}
+	})
+
+	t.Run("validate_sighting_of", func(t *testing.T) {
+
+		tests := []struct {
+			stixType STIXType
+			err      bool
+		}{
+			{TypeInfrastructure, false},
+			{STIXType("some-extended-obj"), false},
+			{TypeIPv4Addr, true},
+		}
+
+		for _, test := range tests {
+			id := NewIdentifier(test.stixType)
+			obj, err := NewSighting(id)
+			if test.err {
+				t.Log(test)
 				assert.Error(err)
 				assert.Nil(obj)
 			} else {

@@ -329,3 +329,9 @@ func TestHasValidIdentifier(t *testing.T) {
 		}
 	}
 }
+
+func TestIdentifierType(t *testing.T) {
+	i := NewIdentifier(TypeReport)
+
+	assert.Equal(t, i.Type(), TypeReport)
+}

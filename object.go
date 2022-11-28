@@ -118,6 +118,10 @@ type STIXRelationshipObject struct {
 	toplevelProperties *CustomObject
 }
 
+func (s *STIXRelationshipObject) Category() STIXObjectCategory {
+	return ObjectCategorySRO
+}
+
 func (s *STIXRelationshipObject) addCustomProperties(c *CustomObject) {
 	s.toplevelProperties = c
 }
@@ -257,6 +261,10 @@ type STIXDomainObject struct {
 	toplevelProperties *CustomObject
 }
 
+func (s *STIXDomainObject) Category() STIXObjectCategory {
+	return ObjectCategorySDO
+}
+
 func (s *STIXDomainObject) addCustomProperties(c *CustomObject) {
 	s.toplevelProperties = c
 }
@@ -348,6 +356,10 @@ type STIXCyberObservableObject struct {
 	Extensions Extensions `json:"extensions,omitempty"`
 
 	toplevelProperties *CustomObject
+}
+
+func (s *STIXCyberObservableObject) Category() STIXObjectCategory {
+	return ObjectCategorySCO
 }
 
 func (s *STIXCyberObservableObject) addCustomProperties(c *CustomObject) {

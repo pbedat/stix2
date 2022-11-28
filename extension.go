@@ -194,6 +194,10 @@ func NewExtensionDefinition(name string, schema string, version string, extTypes
 	return obj, err
 }
 
+func (e *ExtensionDefinition) Category() STIXObjectCategory {
+	return ObjectCategorySMO
+}
+
 // GetID returns the identifier for the object.
 func (e *ExtensionDefinition) GetID() Identifier {
 	return e.ID
@@ -280,6 +284,21 @@ var encExtTypeMap = map[ExtensionType]string{
 // CustomObject is a custom STIX object that allows for extending the specification
 // by creating a new type.
 type CustomObject map[string]interface{}
+
+func (c *CustomObject) Category() STIXObjectCategory {
+	extension_type := (*c)["extension_type"]
+
+	switch extension_type {
+	case ExtensionTypeNewSCO:
+		return ObjectCategorySCO
+	case ExtensionTypeNewSDO:
+		return ObjectCategorySDO
+	case ExtensionTypeNewSRO:
+		return ObjectCategorySRO
+	}
+
+	return ObjectCategoryUnknown
+}
 
 // Get retrieves an attribute from the custom object.
 func (c *CustomObject) Get(key string) interface{} {
